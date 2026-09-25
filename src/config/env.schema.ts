@@ -9,7 +9,7 @@ export const envSchema = z.object({
 
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
 
-  JWT_ACCESS_SECRET: z
+  JWT_SECRET: z
     .string()
     .min(32, 'JWT_ACCESS_SECRET must contain at least 32 characters'),
 });
