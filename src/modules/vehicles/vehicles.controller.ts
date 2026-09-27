@@ -1,3 +1,7 @@
+<<<<<<< Updated upstream
+=======
+import { uuid } from 'drizzle-orm/pg-core';
+>>>>>>> Stashed changes
 import {
   Controller,
   Get,
@@ -58,7 +62,11 @@ export class VehiclesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeVehicle(
     @CurrentUser() user: JwtPayload,
+<<<<<<< Updated upstream
     @Param('id') vehicleId: Vehicle['id'],
+=======
+    @Param('id', { schema: z.coerce.string() }) vehicleId: Vehicle['id'],
+>>>>>>> Stashed changes
   ) {
     await this.vehiclesService.removeVehicle(user.sub, vehicleId);
   }
