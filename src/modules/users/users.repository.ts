@@ -2,30 +2,29 @@ import type { Database } from '@database/database.types.js';
 import { NewUser, User, users } from '@database/schema/users.js';
 import { Injectable } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
-import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class UsersRepository {
   constructor(@InjectDrizzle() private readonly db: Database) {}
 
   async findById(id: User['id']): Promise<User | null> {
-    const result = await this.db
-      .select()
-      .from(users)
-      .where(eq(users.id, id))
-      .limit(1);
+    const result = await this.db.query.users.findFirst({
+      where: {
+        id,
+      },
+    });
 
-    return result[0] ?? null;
+    return result ?? null;
   }
 
   async findByEmail(email: User['email']): Promise<User | null> {
-    const result = await this.db
-      .select()
-      .from(users)
-      .where(eq(users.email, email))
-      .limit(1);
+    const result = await this.db.query.users.findFirst({
+      where: {
+        email,
+      },
+    });
 
-    return result[0] ?? null;
+    return result ?? null;
   }
 
   async create(data: NewUser): Promise<User> {

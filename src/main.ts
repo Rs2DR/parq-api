@@ -28,6 +28,17 @@ async function bootstrap() {
     .setTitle('Park API')
     .setDescription('The API for park application')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter the JWT token',
+        in: 'header',
+      },
+      'access-token',
+    )
     .build();
 
   const documentOptions: SwaggerDocumentOptions = {

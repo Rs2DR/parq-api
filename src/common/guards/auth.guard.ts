@@ -1,3 +1,4 @@
+import { JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
 import {
   CanActivate,
   ExecutionContext,
@@ -24,7 +25,7 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
         secret: this.configService.getOrThrow<string>('JWT_SECRET'),
       });
 

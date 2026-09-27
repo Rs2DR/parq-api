@@ -7,9 +7,9 @@ export const vehicles = p.pgTable('vehicles', {
     .uuid('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  licensePlate: p.varchar('license_plate', { length: 50 }).notNull().unique(),
-  brand: p.varchar('brand', { length: 100 }),
-  model: p.varchar('model', { length: 100 }),
+  licensePlate: p.varchar('license_plate', { length: 8 }).notNull().unique(),
+  brand: p.varchar('brand', { length: 100 }).notNull(),
+  model: p.varchar('model', { length: 100 }).notNull(),
   createdAt: p.timestamp('created_at').notNull().defaultNow(),
 });
 

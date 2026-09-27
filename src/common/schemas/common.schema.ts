@@ -35,10 +35,10 @@ export const IdSchema = z.uuid('Invalid ID format').meta({
   example: '550e8400-e29b-41d4-a716-446655440000',
 });
 
-export const CreatedAtSchema = z.iso.datetime().meta({
+export const CreatedAtSchema = z.coerce.date().meta({
   example: '2026-09-26T10:30:00.000Z',
 });
 
-export const UpdatedAtSchema = z.iso.datetime().meta({
+export const UpdatedAtSchema = z.coerce.date().meta({
   example: '2026-09-26T12:45:00.000Z',
 });
