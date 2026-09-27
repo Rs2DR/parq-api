@@ -1,4 +1,9 @@
-import { applyDecorators, HttpStatus, SerializeOptions } from '@nestjs/common';
+import {
+  applyDecorators,
+  HttpCode,
+  HttpStatus,
+  SerializeOptions,
+} from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { createSchema } from 'zod-openapi';
 import z from 'zod';
@@ -20,6 +25,7 @@ export function SerializeApiResponse({
   });
 
   return applyDecorators(
+    HttpCode(status),
     SerializeOptions({ schema }),
     ApiResponse({ status, schema: converted.schema as any, description }),
   );

@@ -1,12 +1,16 @@
-import { pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import * as p from 'drizzle-orm/pg-core';
 
-export const users = pgTable('users', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  name: varchar({ length: 255 }).notNull(),
-  email: varchar({ length: 255 }).notNull().unique(),
-  passwordHash: varchar({ length: 255 }).notNull(),
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp().notNull().defaultNow(),
+export const users = p.pgTable('users', {
+  id: p.uuid('id').primaryKey().defaultRandom(),
+  name: p.varchar({ length: 255 }).notNull(),
+  email: p.varchar({ length: 255 }).notNull().unique(),
+  passwordHash: p.varchar('password_hash', { length: 255 }).notNull(),
+  createdAt: p.timestamp('created_at').notNull().defaultNow(),
+  updatedAt: p
+    .timestamp('updated_at')
+    .notNull()
+    .defaultNow()
+    .$onUpdateFn(() => new Date()),
 });
 
 export type User = typeof users.$inferSelect;
