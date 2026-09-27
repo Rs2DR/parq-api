@@ -12,14 +12,11 @@ import { type CreateVehicleDto } from './dto/create-vehicle.dto.js';
 export class VehiclesService {
   constructor(private readonly vehiclesRepository: VehiclesRepository) {}
 
-  async getMyVehicles(userId: User['id']): Promise<Vehicle[]> {
+  async getMyVehicles(userId: User['id']) {
     return this.vehiclesRepository.getUserVehicles(userId);
   }
 
-  async addVehicle(
-    userId: User['id'],
-    dto: CreateVehicleDto,
-  ): Promise<Vehicle> {
+  async addVehicle(userId: User['id'], dto: CreateVehicleDto) {
     const { licensePlate } = dto;
 
     const existingVehicle =
@@ -37,10 +34,7 @@ export class VehiclesService {
     });
   }
 
-  async removeVehicle(
-    userId: User['id'],
-    vehicleId: Vehicle['id'],
-  ): Promise<void> {
+  async removeVehicle(userId: User['id'], vehicleId: Vehicle['id']) {
     const deletedVehicle = await this.vehiclesRepository.remove(
       vehicleId,
       userId,
@@ -51,10 +45,7 @@ export class VehiclesService {
     }
   }
 
-  async validateVehicleOwnership(
-    userId: User['id'],
-    vehicleId: Vehicle['id'],
-  ): Promise<Vehicle> {
+  async validateVehicleOwnership(userId: User['id'], vehicleId: Vehicle['id']) {
     const vehicle = await this.vehiclesRepository.findById(vehicleId);
 
     if (!vehicle || vehicle.userId !== userId) {

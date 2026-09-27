@@ -7,7 +7,7 @@ import { InjectDrizzle } from '@nestjs/drizzle';
 export class UsersRepository {
   constructor(@InjectDrizzle() private readonly db: Database) {}
 
-  async findById(id: User['id']): Promise<User | null> {
+  async findById(id: User['id']) {
     const result = await this.db.query.users.findFirst({
       where: {
         id,
@@ -17,7 +17,7 @@ export class UsersRepository {
     return result ?? null;
   }
 
-  async findByEmail(email: User['email']): Promise<User | null> {
+  async findByEmail(email: User['email']) {
     const result = await this.db.query.users.findFirst({
       where: {
         email,
@@ -27,7 +27,7 @@ export class UsersRepository {
     return result ?? null;
   }
 
-  async create(data: NewUser): Promise<User> {
+  async create(data: NewUser) {
     const result = await this.db.insert(users).values(data).returning();
 
     return result[0];

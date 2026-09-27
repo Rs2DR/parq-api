@@ -58,7 +58,7 @@ export class VehiclesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeVehicle(
     @CurrentUser() user: JwtPayload,
-    @Param('id') vehicleId: Vehicle['id'],
+    @Param('id', { schema: z.coerce.string() }) vehicleId: Vehicle['id'],
   ) {
     await this.vehiclesService.removeVehicle(user.sub, vehicleId);
   }

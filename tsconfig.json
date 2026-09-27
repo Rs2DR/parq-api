@@ -22,7 +22,8 @@
       "@config/*": ["./src/config/*"],
       "@modules/*": ["./src/modules/*"],
       "@common/*": ["./src/common/*"],
-      "@database/*": ["./src/database/*"]
+      "@database/*": ["./src/database/*"],
+      "@constants/*": ["./src/constants/*"]
     },
     "types": ["vitest/globals", "node"]
   }
