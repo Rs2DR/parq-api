@@ -1,10 +1,11 @@
+import { licensePlateRegex } from '@constants/regex.constants.js';
 import z from 'zod';
 
 export const CreateVehicleSchema = z.object({
   licensePlate: z
     .string('The license plate number is a mandatory field')
     .trim()
-    .regex(/^[0-9]{4}[A-Z]{2}-?[1-7]$/i, {
+    .regex(licensePlateRegex, {
       message:
         'Invalid Belarus license plate format. Example: 1234AB7 or 1234AB-7',
     }),

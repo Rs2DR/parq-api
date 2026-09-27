@@ -9,11 +9,7 @@ import { and, eq } from 'drizzle-orm';
 export class VehiclesRepository {
   constructor(@InjectDrizzle() private readonly db: Database) {}
 
-<<<<<<< Updated upstream
-  async getUserVehicles(userId: User['id']): Promise<Vehicle[]> {
-=======
   async getUserVehicles(userId: User['id']) {
->>>>>>> Stashed changes
     const result = await this.db.query.vehicles.findMany({
       where: {
         userId,
@@ -23,11 +19,7 @@ export class VehiclesRepository {
     return result;
   }
 
-<<<<<<< Updated upstream
-  async findById(id: Vehicle['id']): Promise<Vehicle | null> {
-=======
   async findById(id: Vehicle['id']) {
->>>>>>> Stashed changes
     const result = await this.db.query.vehicles.findFirst({
       where: { id },
     });
@@ -35,13 +27,7 @@ export class VehiclesRepository {
     return result ?? null;
   }
 
-<<<<<<< Updated upstream
-  async findByLicensePlate(
-    licensePlate: Vehicle['licensePlate'],
-  ): Promise<Vehicle | null> {
-=======
   async findByLicensePlate(licensePlate: Vehicle['licensePlate']) {
->>>>>>> Stashed changes
     const result = await this.db.query.vehicles.findFirst({
       where: { licensePlate },
     });
@@ -49,20 +35,12 @@ export class VehiclesRepository {
     return result ?? null;
   }
 
-<<<<<<< Updated upstream
-  async create(data: NewVehicle): Promise<Vehicle> {
-=======
   async create(data: NewVehicle) {
->>>>>>> Stashed changes
     const result = await this.db.insert(vehicles).values(data).returning();
     return result[0];
   }
 
-<<<<<<< Updated upstream
-  async remove(id: Vehicle['id'], userId: User['id']): Promise<Vehicle | null> {
-=======
   async remove(id: Vehicle['id'], userId: User['id']) {
->>>>>>> Stashed changes
     const result = await this.db
       .delete(vehicles)
       .where(and(eq(vehicles.id, id), eq(vehicles.userId, userId)))
