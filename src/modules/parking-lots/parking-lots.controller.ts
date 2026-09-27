@@ -14,13 +14,14 @@ export class ParkingLotsController {
 
   @Get()
   @SerializeApiResponse({
-    status: HttpStatus.OK,
     schema: z.object({
       lots: ParkingLotsResponseSchema.array(),
     }),
   })
   async getLotsForMap() {
-    return this.parkingLotsService.getLotsForMap();
+    const lots = await this.parkingLotsService.getLotsForMap();
+
+    return { lots };
   }
 
   @Get(':id')
