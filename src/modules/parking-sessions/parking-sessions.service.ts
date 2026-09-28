@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { ParkingSessionsRepository } from './parking-sessions.repository.js';
 import { VehiclesService } from '../vehicles/vehicles.service.js';
-import { ParkingLotsRepository } from '../parking-lots/parking-lots.repository.js';
 import { PaymentsService } from '@modules/payments/payments.service.js';
 import { User } from '@database/schema/users.js';
 import { ParkingSpot } from '@database/schema/parking-spots.js';
