@@ -1,7 +1,12 @@
-import type { Database } from '@database/database.types.js';
-import { NewUser, User, users } from '@database/schema/users.js';
+import { type Database } from '@infrastructure/database/database.types.js';
+import {
+  UserDevice,
+  userDevices,
+} from '@infrastructure/database/schema/user-devices.js';
+import { NewUser, User, users } from '@infrastructure/database/schema/users.js';
 import { Injectable } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
+import { and, eq } from 'drizzle-orm';
 
 @Injectable()
 export class UsersRepository {
@@ -28,8 +33,39 @@ export class UsersRepository {
   }
 
   async create(data: NewUser) {
-    const result = await this.db.insert(users).values(data).returning();
+    const [user] = await this.db.insert(users).values(data).returning();
 
-    return result[0];
+    return user ?? null;
+  }
+
+  async registerDevice(userId: User['id'], fcmToken: UserDevice['fcmToken']) {
+    const [device] = await this.db
+      .insert(userDevices)
+      .values({
+        userId,
+        fcmToken,
+      })
+      .onConflictDoUpdate({
+        target: userDevices.fcmToken,
+
+        set: {
+          userId,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+
+    return device ?? null;
+  }
+
+  async removeDevice(userId: User['id'], fcmToken: string) {
+    const [device] = await this.db
+      .delete(userDevices)
+      .where(
+        and(eq(userDevices.fcmToken, fcmToken), eq(userDevices.userId, userId)),
+      )
+      .returning();
+
+    return device ?? null;
   }
 }

@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto.js';
 import { UsersService } from '@modules/users/users.service.js';
 import { LoginDto } from './dto/login.dto.js';
-import { User } from '@database/schema/users.js';
+import { User } from '../../infrastructure/database/schema/users.js';
 import { JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
 
 @Injectable()

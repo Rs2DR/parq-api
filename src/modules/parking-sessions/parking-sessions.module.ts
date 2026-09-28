@@ -5,6 +5,8 @@ import { ParkingSessionsRepository } from './parking-sessions.repository.js';
 import { PaymentsModule } from '@modules/payments/payments.module.js';
 import { ConfigService } from '@nestjs/config';
 import { VehiclesModule } from '@modules/vehicles/vehicles.module.js';
+import { BullModule } from '@nestjs/bullmq';
+import { PARKING_SESSIONS_QUEUE } from '@infrastructure/queue/queue.constants.js';
 
 @Module({
   imports: [
@@ -13,6 +15,9 @@ import { VehiclesModule } from '@modules/vehicles/vehicles.module.js';
       useFactory: (configService: ConfigService) => ({
         apiKey: configService.getOrThrow<string>('STRIPE_SECRET_KEY'),
       }),
+    }),
+    BullModule.registerQueue({
+      name: PARKING_SESSIONS_QUEUE,
     }),
     VehiclesModule,
   ],

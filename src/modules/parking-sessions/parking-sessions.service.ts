@@ -6,14 +6,23 @@ import {
 import { ParkingSessionsRepository } from './parking-sessions.repository.js';
 import { VehiclesService } from '../vehicles/vehicles.service.js';
 import { PaymentsService } from '@modules/payments/payments.service.js';
-import { User } from '@database/schema/users.js';
-import { ParkingSpot } from '@database/schema/parking-spots.js';
-import { Vehicle } from '@database/schema/vehicles.js';
+import { User } from '../../infrastructure/database/schema/users.js';
+import { ParkingSpot } from '../../infrastructure/database/schema/parking-spots.js';
+import { Vehicle } from '../../infrastructure/database/schema/vehicles.js';
 import { ParkingLotsService } from '@modules/parking-lots/parking-lots.service.js';
+import {
+  PARKING_SESSION_JOBS,
+  PARKING_SESSIONS_QUEUE,
+} from '@infrastructure/queue/queue.constants.js';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { ParkingSession } from '@infrastructure/database/schema/parking-sessions.js';
 
 @Injectable()
 export class ParkingSessionsService {
   constructor(
+    @InjectQueue(PARKING_SESSIONS_QUEUE)
+    private readonly parkingSessionsQueue: Queue,
     private readonly parkingSessionsRepository: ParkingSessionsRepository,
     private readonly paymentsService: PaymentsService,
     private readonly vehiclesService: VehiclesService,
@@ -67,10 +76,11 @@ export class ParkingSessionsService {
     const { spotId, vehicleId, hours } = metadata;
 
     const startTime = new Date();
-    const endTime = new Date();
-    endTime.setHours(startTime.getHours() + parseInt(hours, 10));
+    const endTime = new Date(
+      startTime.getTime() + Number(hours) * 60 * 60 * 1000,
+    );
 
-    return this.parkingSessionsRepository.startSessionTx({
+    const session = await this.parkingSessionsRepository.startSessionTx({
       userId,
       vehicleId,
       parkingSpotId: spotId,
@@ -79,5 +89,62 @@ export class ParkingSessionsService {
       totalPrice: amount,
       status: 'active',
     });
+
+    const now = Date.now();
+    const reminderDelay = endTime.getTime() - now - 15 * 60 * 1000;
+
+    if (reminderDelay > 0) {
+      await this.parkingSessionsQueue.add(
+        PARKING_SESSION_JOBS.SEND_ENDING_REMINDER,
+        {
+          sessionId: session.id,
+        },
+        {
+          delay: reminderDelay,
+
+          attempts: 3,
+
+          backoff: {
+            type: 'exponential',
+            delay: 5_000,
+          },
+
+          removeOnComplete: true,
+          removeOnFail: false,
+        },
+      );
+    }
+
+    const finishDelay = Math.max(0, endTime.getTime() - now);
+
+    await this.parkingSessionsQueue.add(
+      PARKING_SESSION_JOBS.FINISH,
+      {
+        sessionId: session.id,
+      },
+      {
+        delay: finishDelay,
+
+        attempts: 3,
+
+        backoff: {
+          type: 'exponential',
+          delay: 5_000,
+        },
+
+        removeOnComplete: true,
+        removeOnFail: false,
+      },
+    );
+
+    return session;
+  }
+
+  async finishSession(sessionId: ParkingSession['id']) {
+    return this.parkingSessionsRepository.finishSessionTx(sessionId);
+  }
+
+  async getSessionForNotification(sessionId: ParkingSession['id']) {
+    return this.parkingSessionsRepository.findSessionForNotification(sessionId);
   }
 }

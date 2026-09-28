@@ -11,7 +11,19 @@ export const envSchema = z.object({
 
   JWT_SECRET: z
     .string()
-    .min(32, 'JWT_ACCESS_SECRET must contain at least 32 characters'),
+    .min(32, 'JWT_SECRET must contain at least 32 characters'),
 
   STRIPE_SECRET_KEY: z.string(),
+
+  FIREBASE_PROJECT_ID: z.string(),
+
+  FIREBASE_CLIENT_EMAIL: z.email(),
+
+  FIREBASE_PRIVATE_KEY: z.string(),
+
+  FIREBASE_DATABASE_URL: z.url().optional(),
+
+  REDIS_HOST: z.string().min(1),
+
+  REDIS_PORT: z.coerce.number().int().min(1).max(65535),
 });

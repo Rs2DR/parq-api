@@ -6,9 +6,10 @@ import {
 } from './payments.module-definition.js';
 import { PaymentsService } from './payments.service.js';
 import { PaymentsModuleOptions } from './interfaces/payments-module-options.interface.js';
+import { STRIPE_CLIENT } from './payments.constants.js';
 
 const stripeProvider: Provider = {
-  provide: 'STRIPE_CLIENT',
+  provide: STRIPE_CLIENT,
   inject: [MODULE_OPTIONS_TOKEN],
   useFactory: (options: PaymentsModuleOptions) => {
     return new Stripe(options.apiKey, {

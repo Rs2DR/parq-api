@@ -4,8 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { VehiclesRepository } from './vehicles.repository.js';
-import { User } from '@database/schema/users.js';
-import { Vehicle } from '@database/schema/vehicles.js';
+import { User } from '../../infrastructure/database/schema/users.js';
+import { Vehicle } from '../../infrastructure/database/schema/vehicles.js';
 import { type CreateVehicleDto } from './dto/create-vehicle.dto.js';
 
 @Injectable()

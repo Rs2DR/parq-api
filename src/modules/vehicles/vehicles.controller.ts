@@ -11,7 +11,7 @@ import {
 import { VehiclesService } from './vehicles.service.js';
 import { CurrentUser } from '@common/decorators/user.decorator.js';
 import { type JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
-import { Vehicle } from '@database/schema/vehicles.js';
+import { Vehicle } from '../../infrastructure/database/schema/vehicles.js';
 import { SerializeApiResponse } from '@common/decorators/serialize-api-response.decorator.js';
 import { Auth } from '@common/decorators/auth.decorator.js';
 import {

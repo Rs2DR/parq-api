@@ -1,9 +1,10 @@
 import { Injectable, BadRequestException, Inject } from '@nestjs/common';
 import Stripe from 'stripe';
+import { STRIPE_CLIENT } from './payments.constants.js';
 
 @Injectable()
 export class PaymentsService {
-  constructor(@Inject('STRIPE_CLIENT') private readonly stripe: Stripe) {}
+  constructor(@Inject(STRIPE_CLIENT) private readonly stripe: Stripe) {}
 
   async createPaymentIntent(
     amount: number,

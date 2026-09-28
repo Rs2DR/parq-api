@@ -1,5 +1,5 @@
-import { type Database } from '@database/database.types.js';
-import { ParkingLot } from '@database/schema/parking-lots.js';
+import { type Database } from '@infrastructure/database/database.types.js';
+import { ParkingLot } from '@infrastructure/database/schema/parking-lots.js';
 import { Injectable } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
 

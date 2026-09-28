@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UsersRepository } from './users.repository.js';
-import { NewUser, User } from '@database/schema/users.js';
+import { NewUser, User } from '../../infrastructure/database/schema/users.js';
 
 @Injectable()
 export class UsersService {
@@ -44,5 +44,13 @@ export class UsersService {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
+  }
+
+  async registerDevice(userId: User['id'], fcmToken: string) {
+    return this.usersRepository.registerDevice(userId, fcmToken);
+  }
+
+  async removeDevice(userId: User['id'], fcmToken: string) {
+    return this.usersRepository.removeDevice(userId, fcmToken);
   }
 }
