@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { VehiclesModule } from '@modules/vehicles/vehicles.module.js';
 import { BullModule } from '@nestjs/bullmq';
 import { PARKING_SESSIONS_QUEUE } from '@infrastructure/queue/queue.constants.js';
+import { ParkingLotsModule } from '@modules/parking-lots/parking-lots.module.js';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PARKING_SESSIONS_QUEUE } from '@infrastructure/queue/queue.constants.js
       name: PARKING_SESSIONS_QUEUE,
     }),
     VehiclesModule,
+    ParkingLotsModule,
   ],
   controllers: [ParkingSessionsController],
   providers: [ParkingSessionsService, ParkingSessionsRepository],

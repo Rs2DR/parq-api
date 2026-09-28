@@ -59,13 +59,11 @@ export class UsersRepository {
   }
 
   async removeDevice(userId: User['id'], fcmToken: string) {
-    const [device] = await this.db
+    await this.db
       .delete(userDevices)
       .where(
         and(eq(userDevices.fcmToken, fcmToken), eq(userDevices.userId, userId)),
       )
       .returning();
-
-    return device ?? null;
   }
 }

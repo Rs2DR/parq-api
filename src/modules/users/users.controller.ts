@@ -5,7 +5,6 @@ import { type JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
 import { SerializeApiResponse } from '@common/decorators/serialize-api-response.decorator.js';
 import { ProfileResponseSchema } from './dto/profile-response.dto.js';
 import { Auth } from '@common/decorators/auth.decorator.js';
-import { User } from '@infrastructure/database/schema/users.js';
 import {
   RegisterDeviceSchema,
   type RegisterDeviceDto,
