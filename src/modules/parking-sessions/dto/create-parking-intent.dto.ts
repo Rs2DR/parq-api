@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const CreateParkingIntentSchema = z.object({
   spotId: IdSchema,
   vehicleId: IdSchema,
+  lotId: IdSchema,
   hours: z
     .number('Number of hours is required')
     .int({ message: 'Hours must be an integer' })

@@ -40,11 +40,11 @@ export class ParkingSessionsService {
   ) {}
 
   async createParkingIntent(userId: User['id'], dto: CreateParkingIntentDto) {
-    const { spotId, vehicleId, hours } = dto;
+    const { spotId, vehicleId, lotId, hours } = dto;
 
     await this.vehiclesService.validateVehicleOwnership(userId, vehicleId);
 
-    const lot = await this.parkingLotsService.getLotDetails(spotId);
+    const lot = await this.parkingLotsService.getLotDetails(lotId);
 
     if (!lot) {
       throw new NotFoundException(PARKING_SESSION_ERRORS.ZONE_NOT_FOUND);
