@@ -3,5 +3,9 @@ import { PaymentsModuleOptions } from './interfaces/payments-module-options.inte
 
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
   new ConfigurableModuleBuilder<PaymentsModuleOptions>()
-    .setClassMethodName('register')
+    .setClassMethodName('forRoot')
+    .setExtras({ isGlobal: false }, (definition, extras) => ({
+      ...definition,
+      global: extras.isGlobal,
+    }))
     .build();

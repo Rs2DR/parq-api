@@ -1,0 +1,2 @@
+ALTER TABLE "parking_sessions" ADD COLUMN "stripe_payment_intent_id" varchar(255) NOT NULL;--> statement-breakpoint
+ALTER TABLE "parking_sessions" ADD CONSTRAINT "parking_sessions_stripe_payment_intent_id_key" UNIQUE("stripe_payment_intent_id");

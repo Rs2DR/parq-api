@@ -58,7 +58,7 @@ export class UsersRepository {
     return device ?? null;
   }
 
-  async removeDevice(userId: User['id'], fcmToken: string) {
+  async removeDevice(userId: User['id'], fcmToken: UserDevice['fcmToken']) {
     await this.db
       .delete(userDevices)
       .where(

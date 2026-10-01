@@ -7,6 +7,7 @@ import { VehiclesRepository } from './vehicles.repository.js';
 import { User } from '../../infrastructure/database/schema/users.js';
 import { Vehicle } from '../../infrastructure/database/schema/vehicles.js';
 import { type CreateVehicleDto } from './dto/create-vehicle.dto.js';
+import { VEHICLE_ERRORS } from './vehicles.constants.js';
 
 @Injectable()
 export class VehiclesService {
@@ -24,7 +25,7 @@ export class VehiclesService {
 
     if (existingVehicle) {
       throw new ConflictException(
-        `The vehicle with license plate ${licensePlate} is already registered in the system.`,
+        VEHICLE_ERRORS.LICENSE_PLATE_ALREADY_REGISTERED,
       );
     }
 
@@ -41,7 +42,7 @@ export class VehiclesService {
     );
 
     if (!deletedVehicle) {
-      throw new NotFoundException('Vehicle not found in your profile');
+      throw new NotFoundException(VEHICLE_ERRORS.NOT_FOUND_IN_PROFILE);
     }
   }
 
@@ -49,9 +50,7 @@ export class VehiclesService {
     const vehicle = await this.vehiclesRepository.findById(vehicleId);
 
     if (!vehicle || vehicle.userId !== userId) {
-      throw new NotFoundException(
-        'The selected vehicle was not found or does not belong to you',
-      );
+      throw new NotFoundException(VEHICLE_ERRORS.NOT_FOUND_OR_NOT_OWNER);
     }
 
     return vehicle;

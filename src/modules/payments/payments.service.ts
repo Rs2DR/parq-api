@@ -1,10 +1,16 @@
 import { Injectable, BadRequestException, Inject } from '@nestjs/common';
 import Stripe from 'stripe';
-import { STRIPE_CLIENT } from './payments.constants.js';
+import { STRIPE_CLIENT, STRIPE_ERRORS } from './payments.constants.js';
+import { MODULE_OPTIONS_TOKEN } from './payments.module-definition.js';
+import { type PaymentsModuleOptions } from './interfaces/payments-module-options.interface.js';
 
 @Injectable()
 export class PaymentsService {
-  constructor(@Inject(STRIPE_CLIENT) private readonly stripe: Stripe) {}
+  constructor(
+    @Inject(STRIPE_CLIENT) private readonly stripe: Stripe,
+    @Inject(MODULE_OPTIONS_TOKEN)
+    private readonly options: PaymentsModuleOptions,
+  ) {}
 
   async createPaymentIntent(
     amount: number,
@@ -24,16 +30,23 @@ export class PaymentsService {
     };
   }
 
-  async verifyPaymentSucceeded(paymentIntentId: string) {
-    const paymentIntent =
-      await this.stripe.paymentIntents.retrieve(paymentIntentId);
-
-    if (paymentIntent.status !== 'succeeded') {
-      throw new BadRequestException(
-        'The payment is not completed in the Stripe system',
-      );
+  constructWebhookEvent(rawBody: Buffer | undefined, signature: string) {
+    if (!rawBody) {
+      throw new BadRequestException(STRIPE_ERRORS.RAW_BODY_MISSING);
     }
 
-    return paymentIntent;
+    if (!signature) {
+      throw new BadRequestException(STRIPE_ERRORS.SIGNATURE_MISSING);
+    }
+
+    try {
+      return this.stripe.webhooks.constructEvent(
+        rawBody,
+        signature,
+        this.options.webhookSecret,
+      );
+    } catch {
+      throw new BadRequestException(STRIPE_ERRORS.INVALID_WEBHOOK_SIGNATURE);
+    }
   }
 }

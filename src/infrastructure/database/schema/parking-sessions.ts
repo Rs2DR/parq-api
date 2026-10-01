@@ -3,10 +3,16 @@ import { users } from './users.js';
 import { vehicles } from './vehicles.js';
 import { parkingSpots } from './parking-spots.js';
 
+export const PARKING_SESSION_STATUS = {
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+  EXPIRED: 'expired',
+} as const;
+
 export const parkingSessionStatus = p.pgEnum('session_status', [
-  'active',
-  'completed',
-  'expired',
+  PARKING_SESSION_STATUS.ACTIVE,
+  PARKING_SESSION_STATUS.COMPLETED,
+  PARKING_SESSION_STATUS.EXPIRED,
 ]);
 
 export const parkingSessions = p.pgTable('parking_sessions', {
@@ -23,6 +29,12 @@ export const parkingSessions = p.pgTable('parking_sessions', {
     .uuid('parking_spot_id')
     .notNull()
     .references(() => parkingSpots.id),
+  stripePaymentIntentId: p
+    .varchar('stripe_payment_intent_id', {
+      length: 255,
+    })
+    .notNull()
+    .unique(),
 
   startTime: p.timestamp('start_time').notNull().defaultNow(),
   endTime: p.timestamp('end_time').notNull(),

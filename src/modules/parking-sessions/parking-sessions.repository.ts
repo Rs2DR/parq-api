@@ -1,6 +1,7 @@
 import { type Database } from '@infrastructure/database/database.types.js';
 import {
   NewParkingSession,
+  PARKING_SESSION_STATUS,
   ParkingSession,
   parkingSessions,
 } from '@infrastructure/database/schema/parking-sessions.js';
@@ -13,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
 import { and, eq } from 'drizzle-orm';
+import { PARKING_SESSION_ERRORS } from './parking-sessions.constants.js';
 
 @Injectable()
 export class ParkingSessionsRepository {
@@ -35,9 +37,23 @@ export class ParkingSessionsRepository {
 
   async startSessionTx(data: NewParkingSession) {
     return this.db.transaction(async (tx) => {
+      const [existingSession] = await tx
+        .select()
+        .from(parkingSessions)
+        .where(
+          eq(parkingSessions.stripePaymentIntentId, data.stripePaymentIntentId),
+        )
+        .limit(1);
+
+      if (existingSession) {
+        return existingSession;
+      }
+
       const [parkingSpot] = await tx
         .update(parkingSpots)
-        .set({ isOccupied: true })
+        .set({
+          isOccupied: true,
+        })
         .where(
           and(
             eq(parkingSpots.id, data.parkingSpotId),
@@ -58,14 +74,10 @@ export class ParkingSessionsRepository {
           .limit(1);
 
         if (!existingSpot) {
-          throw new NotFoundException(
-            'The specified parking space was not found',
-          );
+          throw new NotFoundException(PARKING_SESSION_ERRORS.SPOT_NOT_FOUND);
         }
 
-        throw new ConflictException(
-          'The selected parking space is already occupied',
-        );
+        throw new ConflictException(PARKING_SESSION_ERRORS.SPOT_OCCUPIED);
       }
 
       const [session] = await tx
@@ -74,7 +86,7 @@ export class ParkingSessionsRepository {
         .returning();
 
       if (!session) {
-        throw new Error('Failed to create parking session');
+        throw new Error(PARKING_SESSION_ERRORS.PARKING_SESSION_CREATE_FAILED);
       }
 
       return session;
@@ -94,28 +106,30 @@ export class ParkingSessionsRepository {
         .limit(1);
 
       if (!session) {
-        throw new NotFoundException(`Parking session ${sessionId} not found`);
+        throw new NotFoundException(
+          PARKING_SESSION_ERRORS.PARKING_SESSION_NOT_FOUND,
+        );
       }
 
-      if (session.status !== 'active') {
+      if (session.status !== PARKING_SESSION_STATUS.ACTIVE) {
         return session;
       }
 
       const [updatedSession] = await tx
         .update(parkingSessions)
         .set({
-          status: 'completed',
+          status: PARKING_SESSION_STATUS.COMPLETED,
         })
         .where(
           and(
-            eq(parkingSessions.id, session.id),
-            eq(parkingSessions.status, 'active'),
+            eq(parkingSessions.id, sessionId),
+            eq(parkingSessions.status, PARKING_SESSION_STATUS.ACTIVE),
           ),
         )
         .returning();
 
       if (!updatedSession) {
-        throw new Error(`Failed to finish parking session ${sessionId}`);
+        return session;
       }
 
       await tx

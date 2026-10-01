@@ -13,7 +13,7 @@ const stripeProvider: Provider = {
   inject: [MODULE_OPTIONS_TOKEN],
   useFactory: (options: PaymentsModuleOptions) => {
     return new Stripe(options.apiKey, {
-      apiVersion: (options.apiVersion || '2025-01-27') as any,
+      apiVersion: options.apiVersion as any,
     });
   },
 };

@@ -4,4 +4,8 @@ import { FirebaseModuleOptions } from './interfaces/firebase-module-options.inte
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
   new ConfigurableModuleBuilder<FirebaseModuleOptions>()
     .setClassMethodName('forRoot')
+    .setExtras({ isGlobal: false }, (definition, extras) => ({
+      ...definition,
+      global: extras.isGlobal,
+    }))
     .build();

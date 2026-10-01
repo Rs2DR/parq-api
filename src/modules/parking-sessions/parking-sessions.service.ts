@@ -6,9 +6,7 @@ import {
 import { ParkingSessionsRepository } from './parking-sessions.repository.js';
 import { VehiclesService } from '../vehicles/vehicles.service.js';
 import { PaymentsService } from '@modules/payments/payments.service.js';
-import { User } from '../../infrastructure/database/schema/users.js';
-import { ParkingSpot } from '../../infrastructure/database/schema/parking-spots.js';
-import { Vehicle } from '../../infrastructure/database/schema/vehicles.js';
+import { User } from '@infrastructure/database/schema/users.js';
 import { ParkingLotsService } from '@modules/parking-lots/parking-lots.service.js';
 import {
   PARKING_SESSION_JOBS,
@@ -16,7 +14,19 @@ import {
 } from '@infrastructure/queue/queue.constants.js';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { ParkingSession } from '@infrastructure/database/schema/parking-sessions.js';
+import {
+  PARKING_SESSION_STATUS,
+  ParkingSession,
+} from '@infrastructure/database/schema/parking-sessions.js';
+import {
+  DEFAULT_QUEUE_OPTIONS,
+  PARKING_SESSION_ERRORS,
+  PARKING_HOUR_MS,
+  REMINDER_TIME_MS,
+} from './parking-sessions.constants.js';
+import { CreateParkingIntentDto } from './dto/create-parking-intent.dto.js';
+import Stripe from 'stripe';
+import { PaymentIntentMetadataSchema } from './schema/payment-intent-metadata.schema.js';
 
 @Injectable()
 export class ParkingSessionsService {
@@ -29,30 +39,25 @@ export class ParkingSessionsService {
     private readonly parkingLotsService: ParkingLotsService,
   ) {}
 
-  async createParkingIntent(
-    userId: User['id'],
-    spotId: ParkingSpot['id'],
-    vehicleId: Vehicle['id'],
-    hours: number,
-  ) {
+  async createParkingIntent(userId: User['id'], dto: CreateParkingIntentDto) {
+    const { spotId, vehicleId, hours } = dto;
+
     await this.vehiclesService.validateVehicleOwnership(userId, vehicleId);
 
     const lot = await this.parkingLotsService.getLotDetails(spotId);
 
     if (!lot) {
-      throw new NotFoundException('Parking zone or space not found');
+      throw new NotFoundException(PARKING_SESSION_ERRORS.ZONE_NOT_FOUND);
     }
 
     const spot = lot.parkingSpots.find((s) => s.id === spotId);
 
     if (!spot) {
-      throw new NotFoundException('The specified parking space was not found');
+      throw new NotFoundException(PARKING_SESSION_ERRORS.SPOT_NOT_FOUND);
     }
 
     if (spot.isOccupied) {
-      throw new BadRequestException(
-        'The selected spot is already occupied by another vehicle',
-      );
+      throw new BadRequestException(PARKING_SESSION_ERRORS.SPOT_OCCUPIED);
     }
 
     const totalAmount = lot.pricePerHour * hours;
@@ -69,29 +74,37 @@ export class ParkingSessionsService {
     };
   }
 
-  async confirmAndStartSession(userId: User['id'], paymentIntentId: string) {
-    const { metadata, amount } =
-      await this.paymentsService.verifyPaymentSucceeded(paymentIntentId);
+  async startSessionFromPayment(paymentIntent: Stripe.PaymentIntent) {
+    const { metadata, amount } = paymentIntent;
 
-    const { spotId, vehicleId, hours } = metadata;
+    const metadataResult = PaymentIntentMetadataSchema.safeParse(metadata);
+
+    if (!metadataResult.success) {
+      throw new BadRequestException(
+        PARKING_SESSION_ERRORS.INVALID_PAYMENT_METADATA,
+      );
+    }
+
+    const { userId, spotId, vehicleId, hours } = metadataResult.data;
 
     const startTime = new Date();
-    const endTime = new Date(
-      startTime.getTime() + Number(hours) * 60 * 60 * 1000,
-    );
+
+    const endTime = new Date(startTime.getTime() + hours * PARKING_HOUR_MS);
 
     const session = await this.parkingSessionsRepository.startSessionTx({
       userId,
       vehicleId,
       parkingSpotId: spotId,
+      stripePaymentIntentId: paymentIntent.id,
       startTime,
       endTime,
       totalPrice: amount,
-      status: 'active',
+      status: PARKING_SESSION_STATUS.ACTIVE,
     });
 
     const now = Date.now();
-    const reminderDelay = endTime.getTime() - now - 15 * 60 * 1000;
+
+    const reminderDelay = endTime.getTime() - now - REMINDER_TIME_MS;
 
     if (reminderDelay > 0) {
       await this.parkingSessionsQueue.add(
@@ -101,16 +114,7 @@ export class ParkingSessionsService {
         },
         {
           delay: reminderDelay,
-
-          attempts: 3,
-
-          backoff: {
-            type: 'exponential',
-            delay: 5_000,
-          },
-
-          removeOnComplete: true,
-          removeOnFail: false,
+          ...DEFAULT_QUEUE_OPTIONS,
         },
       );
     }
@@ -124,16 +128,7 @@ export class ParkingSessionsService {
       },
       {
         delay: finishDelay,
-
-        attempts: 3,
-
-        backoff: {
-          type: 'exponential',
-          delay: 5_000,
-        },
-
-        removeOnComplete: true,
-        removeOnFail: false,
+        ...DEFAULT_QUEUE_OPTIONS,
       },
     );
 

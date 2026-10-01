@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { UsersRepository } from './users.repository.js';
 import { NewUser, User } from '../../infrastructure/database/schema/users.js';
+import { UserDevice } from '@infrastructure/database/schema/user-devices.js';
+import { USER_ERRORS } from './users.constants.js';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +16,7 @@ export class UsersService {
     const user = await this.usersRepository.findById(id);
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(USER_ERRORS.NOT_FOUND);
     }
 
     return user;
@@ -28,7 +30,7 @@ export class UsersService {
     const existingUser = await this.usersRepository.findByEmail(data.email);
 
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new ConflictException(USER_ERRORS.EMAIL_ALREADY_EXISTS);
     }
 
     return this.usersRepository.create(data);
@@ -46,11 +48,11 @@ export class UsersService {
     };
   }
 
-  async registerDevice(userId: User['id'], fcmToken: string) {
+  async registerDevice(userId: User['id'], fcmToken: UserDevice['fcmToken']) {
     return this.usersRepository.registerDevice(userId, fcmToken);
   }
 
-  async removeDevice(userId: User['id'], fcmToken: string) {
+  async removeDevice(userId: User['id'], fcmToken: UserDevice['fcmToken']) {
     return this.usersRepository.removeDevice(userId, fcmToken);
   }
 }

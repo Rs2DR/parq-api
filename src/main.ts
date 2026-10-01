@@ -13,7 +13,9 @@ import { ConfigService } from '@nestjs/config';
 import { createSchema } from 'zod-openapi';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true,
+  });
 
   app.useGlobalPipes(new StandardSchemaValidationPipe());
   app.useGlobalInterceptors(

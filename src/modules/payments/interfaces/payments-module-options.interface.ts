@@ -1,4 +1,7 @@
+import Stripe from 'stripe';
+
 export interface PaymentsModuleOptions {
   apiKey: string;
-  apiVersion?: string;
+  webhookSecret: string;
+  apiVersion?: Stripe.LatestApiVersion;
 }
