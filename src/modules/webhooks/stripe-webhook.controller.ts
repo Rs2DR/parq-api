@@ -12,6 +12,8 @@ import type { RawBodyRequest } from '@nestjs/common';
 
 import { PaymentsService } from '@modules/payments/payments.service.js';
 import { ParkingSessionsService } from '@modules/parking-sessions/parking-sessions.service.js';
+import { SerializeApiResponse } from '@common/decorators/serialize-api-response.decorator.js';
+import z from 'zod';
 
 @Controller('webhooks/stripe')
 export class StripeWebhookController {
@@ -22,6 +24,7 @@ export class StripeWebhookController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
+  @SerializeApiResponse({ schema: z.object({ received: z.boolean() }) })
   async handleWebhook(
     @Req() request: RawBodyRequest<Request>,
     @Headers('stripe-signature') signature: string,

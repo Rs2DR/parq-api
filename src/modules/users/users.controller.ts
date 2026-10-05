@@ -14,6 +14,7 @@ import {
   RemoveDeviceSchema,
 } from './dto/remove-device.dto.js';
 import { User } from '@infrastructure/database/schema/users.js';
+import { RegisterDeviceResponseSchema } from './dto/register-device-response.dto.js';
 
 @Auth()
 @Controller('users')
@@ -27,10 +28,13 @@ export class UsersController {
   }
 
   @Post('me/devices')
+  @SerializeApiResponse({ schema: RegisterDeviceResponseSchema })
   async registerDevice(
     @CurrentUser('sub') userId: User['id'],
     @Body({ schema: RegisterDeviceSchema }) body: RegisterDeviceDto,
   ) {
+    console.log('added device');
+
     return this.usersService.registerDevice(userId, body.fcmToken);
   }
 

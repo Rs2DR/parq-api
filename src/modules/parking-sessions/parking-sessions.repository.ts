@@ -13,7 +13,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { PARKING_SESSION_ERRORS } from './parking-sessions.constants.js';
 
 @Injectable()
@@ -25,11 +25,18 @@ export class ParkingSessionsRepository {
       .select({
         sessionId: parkingSessions.id,
         status: parkingSessions.status,
-        fcmToken: userDevices.fcmToken,
+        fcmTokens: sql<string[]>`
+        COALESCE(
+          array_agg(${userDevices.fcmToken})
+          FILTER (WHERE ${userDevices.fcmToken} IS NOT NULL),
+          ARRAY[]::text[]
+        )
+      `,
       })
       .from(parkingSessions)
-      .innerJoin(userDevices, eq(userDevices.userId, parkingSessions.userId))
+      .leftJoin(userDevices, eq(userDevices.userId, parkingSessions.userId))
       .where(eq(parkingSessions.id, sessionId))
+      .groupBy(parkingSessions.id, parkingSessions.status)
       .limit(1);
 
     return result ?? null;

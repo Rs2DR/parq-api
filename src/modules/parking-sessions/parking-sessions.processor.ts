@@ -5,7 +5,6 @@ import {
   PARKING_SESSION_JOBS,
   PARKING_SESSIONS_QUEUE,
 } from '@infrastructure/queue/queue.constants.js';
-import { ParkingSession } from '@infrastructure/database/schema/parking-sessions.js';
 import { FirebaseService } from '@modules/firebase/firebase.service.js';
 import { ParkingSessionsService } from './parking-sessions.service.js';
 
@@ -30,7 +29,7 @@ export class ParkingSessionsProcessor extends WorkerHost {
         return;
 
       case PARKING_SESSION_JOBS.FINISH:
-        await this.finishParkingSession(job.data.sessionId);
+        await this.parkingSessionsService.finishSession(job.data.sessionId);
         return;
 
       default:
@@ -47,29 +46,38 @@ export class ParkingSessionsProcessor extends WorkerHost {
   onFailed(job: Job | undefined, error: Error) {
     console.error(`Parking session job ${job?.id} failed`, error);
   }
-
   private async sendEndingReminder(sessionId: string): Promise<void> {
     const session =
       await this.parkingSessionsService.getSessionForNotification(sessionId);
 
+    console.log('SESSION FOR NOTIFICATION:', session);
+
     if (!session || session.status !== 'active') {
+      console.log('Notification skipped');
       return;
     }
 
-    await this.firebaseService.sendNotification(
-      session.fcmToken,
-      'Парковка заканчивается',
-      'До окончания парковки осталось 15 минут',
-      {
-        type: 'parking-session-ending',
-        sessionId,
-      },
-    );
-  }
+    const tokens = session.fcmTokens.filter(Boolean);
 
-  private async finishParkingSession(
-    sessionId: ParkingSession['id'],
-  ): Promise<void> {
-    await this.parkingSessionsService.finishSession(sessionId);
+    if (tokens.length === 0) {
+      console.log('No FCM tokens found');
+      return;
+    }
+
+    for (const token of tokens) {
+      console.log('SENDING FCM TO:', token);
+
+      await this.firebaseService.sendNotification(
+        token,
+        'Parking ending',
+        'There are 59 minutes left until your parking session ends',
+        {
+          type: 'parking-session-ending',
+          sessionId,
+        },
+      );
+    }
+
+    console.log('FCM SENT');
   }
 }

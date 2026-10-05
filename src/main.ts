@@ -11,12 +11,15 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createSchema } from 'zod-openapi';
+import { Logger } from 'nestjs-pino';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
     rawBody: true,
   });
 
+  app.useLogger(app.get(Logger));
   app.useGlobalPipes(new StandardSchemaValidationPipe());
   app.useGlobalInterceptors(
     new StandardSchemaSerializerInterceptor(app.get(Reflector)),
@@ -56,8 +59,10 @@ async function bootstrap() {
   const documentFactory = () =>
     SwaggerModule.createDocument(app, config, documentOptions);
 
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('api', app, documentFactory, {
+    jsonDocumentUrl: 'api-json',
+  });
 
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 }
 await bootstrap();

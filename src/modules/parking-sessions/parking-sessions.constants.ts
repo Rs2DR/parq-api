@@ -1,6 +1,6 @@
 import { JobsOptions } from 'bullmq';
 
-export const REMINDER_TIME_MS = 15 * 60 * 1000;
+export const REMINDER_TIME_MS = 59 * 60 * 1000;
 
 export const PARKING_HOUR_MS = 60 * 60 * 1000;
 

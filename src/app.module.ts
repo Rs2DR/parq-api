@@ -1,5 +1,6 @@
 import { envSchema } from '@config/env.schema.js';
 import { DatabaseModule } from '@infrastructure/database/database.module.js';
+import { createLoggerConfig } from '@config/logger.config.js';
 import { QueueModule } from '@infrastructure/queue/queue.module.js';
 import { AuthModule } from '@modules/auth/auth.module.js';
 import { FirebaseModule } from '@modules/firebase/firebase.module.js';
@@ -12,6 +13,10 @@ import { WebhooksModule } from '@modules/webhooks/webhooks.module.js';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { LoggerModule } from 'nestjs-pino';
+import { createPaymentsConfig } from '@config/payment.config.js';
+import { createFirebaseConfig } from '@config/firebase.config.js';
+import { createJwtConfig } from '@config/jwt.config.js';
 
 @Module({
   imports: [
@@ -22,39 +27,21 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.registerAsync({
       inject: [ConfigService],
       global: true,
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.getOrThrow<string>('JWT_SECRET'),
-        signOptions: {
-          expiresIn: '15m',
-        },
-      }),
+      useFactory: createJwtConfig,
     }),
     FirebaseModule.forRootAsync({
       inject: [ConfigService],
       isGlobal: true,
-      useFactory: (configService: ConfigService) => ({
-        credential: {
-          projectId: configService.getOrThrow<string>('FIREBASE_PROJECT_ID'),
-          clientEmail: configService.getOrThrow<string>(
-            'FIREBASE_CLIENT_EMAIL',
-          ),
-          privateKey: configService
-            .getOrThrow<string>('FIREBASE_PRIVATE_KEY')
-            .replace(/\\n/g, '\n'),
-        },
-        databaseURL: configService.get<string>('FIREBASE_DATABASE_URL'),
-      }),
+      useFactory: createFirebaseConfig,
     }),
     PaymentsModule.forRootAsync({
       inject: [ConfigService],
       isGlobal: true,
-      useFactory: (configService: ConfigService) => ({
-        apiKey: configService.getOrThrow<string>('STRIPE_SECRET_KEY'),
-        webhookSecret: configService.getOrThrow<string>(
-          'STRIPE_WEBHOOK_SECRET',
-        ),
-        apiVersion: '2026-08-26.dahlia',
-      }),
+      useFactory: createPaymentsConfig,
+    }),
+    LoggerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: createLoggerConfig,
     }),
     QueueModule,
     DatabaseModule,
