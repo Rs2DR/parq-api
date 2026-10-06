@@ -1,20 +1,22 @@
 import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
-import { UsersService } from './users.service.js';
+
+import { Auth } from '@common/decorators/auth.decorator.js';
+import { SerializeApiResponse } from '@common/decorators/serialize-api-response.decorator.js';
 import { CurrentUser } from '@common/decorators/user.decorator.js';
 import { type JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
-import { SerializeApiResponse } from '@common/decorators/serialize-api-response.decorator.js';
+import { User } from '@infrastructure/database/schema/users.js';
+
 import { ProfileResponseSchema } from './dto/profile-response.dto.js';
-import { Auth } from '@common/decorators/auth.decorator.js';
+import { RegisterDeviceResponseSchema } from './dto/register-device-response.dto.js';
 import {
-  RegisterDeviceSchema,
   type RegisterDeviceDto,
+  RegisterDeviceSchema,
 } from './dto/register-device.dto.js';
 import {
   type RemoveDeviceDto,
   RemoveDeviceSchema,
 } from './dto/remove-device.dto.js';
-import { User } from '@infrastructure/database/schema/users.js';
-import { RegisterDeviceResponseSchema } from './dto/register-device-response.dto.js';
+import { UsersService } from './users.service.js';
 
 @Auth()
 @Controller('users')

@@ -1,3 +1,10 @@
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectDrizzle } from '@nestjs/drizzle';
+
 import { type Database } from '@infrastructure/database/database.types.js';
 import {
   NewParkingSession,
@@ -7,13 +14,8 @@ import {
 } from '@infrastructure/database/schema/parking-sessions.js';
 import { parkingSpots } from '@infrastructure/database/schema/parking-spots.js';
 import { userDevices } from '@infrastructure/database/schema/user-devices.js';
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { InjectDrizzle } from '@nestjs/drizzle';
 import { and, eq, sql } from 'drizzle-orm';
+
 import { PARKING_SESSION_ERRORS } from './parking-sessions.constants.js';
 
 @Injectable()

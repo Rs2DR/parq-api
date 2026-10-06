@@ -1,7 +1,8 @@
-import { type Database } from '@infrastructure/database/database.types.js';
-import { ParkingLot } from '@infrastructure/database/schema/parking-lots.js';
 import { Injectable } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
+
+import { type Database } from '@infrastructure/database/database.types.js';
+import { ParkingLot } from '@infrastructure/database/schema/parking-lots.js';
 
 @Injectable()
 export class ParkingLotsRepository {

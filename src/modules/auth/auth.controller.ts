@@ -1,9 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AuthService } from './auth.service.js';
-import { RegisterSchema, type RegisterDto } from './dto/register.dto.js';
-import { LoginSchema, type LoginDto } from './dto/login.dto.js';
-import { AuthResponseSchema } from './dto/auth-response.dto.js';
+
 import { SerializeApiResponse } from '@common/decorators/serialize-api-response.decorator.js';
+
+import { AuthService } from './auth.service.js';
+import { AuthResponseSchema } from './dto/auth-response.dto.js';
+import { type LoginDto, LoginSchema } from './dto/login.dto.js';
+import { type RegisterDto, RegisterSchema } from './dto/register.dto.js';
 
 @Controller('auth')
 export class AuthController {

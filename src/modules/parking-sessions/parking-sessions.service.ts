@@ -1,31 +1,33 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
-import { ParkingSessionsRepository } from './parking-sessions.repository.js';
-import { VehiclesService } from '../vehicles/vehicles.service.js';
-import { PaymentsService } from '@modules/payments/payments.service.js';
-import { User } from '@infrastructure/database/schema/users.js';
-import { ParkingLotsService } from '@modules/parking-lots/parking-lots.service.js';
-import {
-  PARKING_SESSION_JOBS,
-  PARKING_SESSIONS_QUEUE,
-} from '@infrastructure/queue/queue.constants.js';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
+
 import {
   PARKING_SESSION_STATUS,
   ParkingSession,
 } from '@infrastructure/database/schema/parking-sessions.js';
+import { User } from '@infrastructure/database/schema/users.js';
+import {
+  PARKING_SESSIONS_QUEUE,
+  PARKING_SESSION_JOBS,
+} from '@infrastructure/queue/queue.constants.js';
+import { ParkingLotsService } from '@modules/parking-lots/parking-lots.service.js';
+import { PaymentsService } from '@modules/payments/payments.service.js';
+import { Queue } from 'bullmq';
+import Stripe from 'stripe';
+
+import { VehiclesService } from '../vehicles/vehicles.service.js';
+import { CreateParkingIntentDto } from './dto/create-parking-intent.dto.js';
 import {
   DEFAULT_QUEUE_OPTIONS,
-  PARKING_SESSION_ERRORS,
   PARKING_HOUR_MS,
+  PARKING_SESSION_ERRORS,
   REMINDER_TIME_MS,
 } from './parking-sessions.constants.js';
-import { CreateParkingIntentDto } from './dto/create-parking-intent.dto.js';
-import Stripe from 'stripe';
+import { ParkingSessionsRepository } from './parking-sessions.repository.js';
 import { PaymentIntentMetadataSchema } from './schema/payment-intent-metadata.schema.js';
 
 @Injectable()

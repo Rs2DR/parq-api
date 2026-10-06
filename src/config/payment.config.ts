@@ -1,5 +1,6 @@
-import { PaymentsModuleOptions } from '@modules/payments/interfaces/payments-module-options.interface.js';
 import type { ConfigService } from '@nestjs/config';
+
+import { PaymentsModuleOptions } from '@modules/payments/interfaces/payments-module-options.interface.js';
 
 export function createPaymentsConfig(
   configService: ConfigService,

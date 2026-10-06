@@ -1,3 +1,6 @@
+import { Injectable } from '@nestjs/common';
+import { InjectDrizzle } from '@nestjs/drizzle';
+
 import { type Database } from '@infrastructure/database/database.types.js';
 import { User } from '@infrastructure/database/schema/users.js';
 import {
@@ -5,8 +8,6 @@ import {
   Vehicle,
   vehicles,
 } from '@infrastructure/database/schema/vehicles.js';
-import { Injectable } from '@nestjs/common';
-import { InjectDrizzle } from '@nestjs/drizzle';
 import { and, eq } from 'drizzle-orm';
 
 @Injectable()

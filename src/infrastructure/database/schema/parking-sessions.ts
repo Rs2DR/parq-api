@@ -1,7 +1,8 @@
 import * as p from 'drizzle-orm/pg-core';
+
+import { parkingSpots } from './parking-spots.js';
 import { users } from './users.js';
 import { vehicles } from './vehicles.js';
-import { parkingSpots } from './parking-spots.js';
 
 export const PARKING_SESSION_STATUS = {
   ACTIVE: 'active',

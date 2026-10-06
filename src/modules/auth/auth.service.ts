@@ -1,15 +1,18 @@
 import {
+  BadRequestException,
   Injectable,
   UnauthorizedException,
-  BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-import { RegisterDto } from './dto/register.dto.js';
-import { UsersService } from '@modules/users/users.service.js';
-import { LoginDto } from './dto/login.dto.js';
-import { User } from '../../infrastructure/database/schema/users.js';
+
 import { JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
+import { User } from '@infrastructure/database/schema/users.js';
+import { UsersService } from '@modules/users/users.service.js';
+import * as bcrypt from 'bcrypt';
+
+import { AUTH_ERRORS } from './auth.constants.js';
+import { LoginDto } from './dto/login.dto.js';
+import { RegisterDto } from './dto/register.dto.js';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +27,7 @@ export class AuthService {
     const existingUser = await this.usersService.findByEmail(email);
 
     if (existingUser) {
-      throw new BadRequestException('A user with this email already exists');
+      throw new BadRequestException(AUTH_ERRORS.USER_ALREADY_EXISTS);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -44,13 +47,13 @@ export class AuthService {
     const user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException();
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException(AUTH_ERRORS.INVALID_DATA);
     }
 
     return this.generateToken(user);

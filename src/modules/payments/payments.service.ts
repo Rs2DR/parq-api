@@ -1,8 +1,10 @@
-import { Injectable, BadRequestException, Inject } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+
 import Stripe from 'stripe';
+
+import { type PaymentsModuleOptions } from './interfaces/payments-module-options.interface.js';
 import { STRIPE_CLIENT, STRIPE_ERRORS } from './payments.constants.js';
 import { MODULE_OPTIONS_TOKEN } from './payments.module-definition.js';
-import { type PaymentsModuleOptions } from './interfaces/payments-module-options.interface.js';
 
 @Injectable()
 export class PaymentsService {

@@ -1,11 +1,13 @@
-import { Controller, Get, Param, HttpStatus } from '@nestjs/common';
-import { ParkingLotsService } from './parking-lots.service.js';
+import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import { ApiParam } from '@nestjs/swagger';
+
 import { Auth } from '@common/decorators/auth.decorator.js';
 import { SerializeApiResponse } from '@common/decorators/serialize-api-response.decorator.js';
-import { ApiParam } from '@nestjs/swagger';
 import z from 'zod';
-import { ParkingLotsResponseSchema } from './dto/parking-lots-response.dto.js';
+
 import { ParkingLotDetailsResponseSchema } from './dto/parking-lot-details-response.dto.js';
+import { ParkingLotsResponseSchema } from './dto/parking-lots-response.dto.js';
+import { ParkingLotsService } from './parking-lots.service.js';
 
 @Auth()
 @Controller('parking-lots')

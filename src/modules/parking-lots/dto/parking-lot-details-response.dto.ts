@@ -1,6 +1,7 @@
-import z from 'zod';
-import { ParkingLotsResponseSchema } from './parking-lots-response.dto.js';
 import { IdSchema } from '@common/schemas/common.schema.js';
+import z from 'zod';
+
+import { ParkingLotsResponseSchema } from './parking-lots-response.dto.js';
 
 export const ParkingSpotSchema = z.object({
   id: IdSchema,

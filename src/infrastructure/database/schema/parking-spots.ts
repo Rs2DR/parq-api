@@ -1,4 +1,5 @@
 import * as p from 'drizzle-orm/pg-core';
+
 import { parkingLots } from './parking-lots.js';
 
 export const parkingSpots = p.pgTable('parking_spots', {

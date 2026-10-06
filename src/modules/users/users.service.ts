@@ -3,10 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { UsersRepository } from './users.repository.js';
-import { NewUser, User } from '../../infrastructure/database/schema/users.js';
+
 import { UserDevice } from '@infrastructure/database/schema/user-devices.js';
+
+import { NewUser, User } from '../../infrastructure/database/schema/users.js';
 import { USER_ERRORS } from './users.constants.js';
+import { UsersRepository } from './users.repository.js';
 
 @Injectable()
 export class UsersService {

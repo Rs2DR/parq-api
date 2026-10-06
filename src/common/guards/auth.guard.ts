@@ -1,4 +1,3 @@
-import { JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
 import {
   CanActivate,
   ExecutionContext,
@@ -7,6 +6,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+
+import { JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
 import { Request } from 'express';
 
 @Injectable()

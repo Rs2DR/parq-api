@@ -1,4 +1,4 @@
-import { licensePlateRegex } from '@constants/regex.constants.js';
+import { licensePlateRegex } from '@common/constants/regex.constants.js';
 import z from 'zod';
 
 export const CreateVehicleSchema = z.object({

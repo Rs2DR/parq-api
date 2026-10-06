@@ -1,17 +1,19 @@
-import { NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app.module.js';
-import {
-  DocumentBuilder,
-  SwaggerDocumentOptions,
-  SwaggerModule,
-} from '@nestjs/swagger';
 import {
   StandardSchemaSerializerInterceptor,
   StandardSchemaValidationPipe,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createSchema } from 'zod-openapi';
+import { NestFactory, Reflector } from '@nestjs/core';
+import {
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
+
 import { Logger } from 'nestjs-pino';
+import { createSchema } from 'zod-openapi';
+
+import { AppModule } from './app.module.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

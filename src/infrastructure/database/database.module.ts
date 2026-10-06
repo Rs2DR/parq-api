@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DrizzleModule } from '@nestjs/drizzle';
+
 import { drizzle } from 'drizzle-orm/node-postgres';
+
 import { relations } from './relations.js';
 
 @Module({

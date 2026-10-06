@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ParkingLotsRepository } from './parking-lots.repository.js';
+
 import { ParkingLot } from '../../infrastructure/database/schema/parking-lots.js';
+import { ParkingLotsRepository } from './parking-lots.repository.js';
 
 @Injectable()
 export class ParkingLotsService {

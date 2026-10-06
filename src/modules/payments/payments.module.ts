@@ -1,12 +1,14 @@
 import { Module, Provider } from '@nestjs/common';
+
 import Stripe from 'stripe';
+
+import { PaymentsModuleOptions } from './interfaces/payments-module-options.interface.js';
+import { STRIPE_CLIENT } from './payments.constants.js';
 import {
   ConfigurableModuleClass,
   MODULE_OPTIONS_TOKEN,
 } from './payments.module-definition.js';
 import { PaymentsService } from './payments.service.js';
-import { PaymentsModuleOptions } from './interfaces/payments-module-options.interface.js';
-import { STRIPE_CLIENT } from './payments.constants.js';
 
 const stripeProvider: Provider = {
   provide: STRIPE_CLIENT,

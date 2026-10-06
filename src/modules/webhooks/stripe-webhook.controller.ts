@@ -6,13 +6,13 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
-import type Stripe from 'stripe';
-import type { Request } from 'express';
 import type { RawBodyRequest } from '@nestjs/common';
 
-import { PaymentsService } from '@modules/payments/payments.service.js';
-import { ParkingSessionsService } from '@modules/parking-sessions/parking-sessions.service.js';
 import { SerializeApiResponse } from '@common/decorators/serialize-api-response.decorator.js';
+import { ParkingSessionsService } from '@modules/parking-sessions/parking-sessions.service.js';
+import { PaymentsService } from '@modules/payments/payments.service.js';
+import type { Request } from 'express';
+import type Stripe from 'stripe';
 import z from 'zod';
 
 @Controller('webhooks/stripe')

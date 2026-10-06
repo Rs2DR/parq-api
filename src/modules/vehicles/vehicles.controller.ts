@@ -1,26 +1,28 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Delete,
   Body,
-  Param,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Post,
 } from '@nestjs/common';
-import { VehiclesService } from './vehicles.service.js';
+import { ApiParam } from '@nestjs/swagger';
+
+import { Auth } from '@common/decorators/auth.decorator.js';
+import { SerializeApiResponse } from '@common/decorators/serialize-api-response.decorator.js';
 import { CurrentUser } from '@common/decorators/user.decorator.js';
 import { type JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
+import z from 'zod';
+
 import { Vehicle } from '../../infrastructure/database/schema/vehicles.js';
-import { SerializeApiResponse } from '@common/decorators/serialize-api-response.decorator.js';
-import { Auth } from '@common/decorators/auth.decorator.js';
 import {
   type CreateVehicleDto,
   CreateVehicleSchema,
 } from './dto/create-vehicle.dto.js';
 import { VehicleResponseSchema } from './dto/vehicle-response.dto.js';
-import { ApiParam } from '@nestjs/swagger';
-import z from 'zod';
+import { VehiclesService } from './vehicles.service.js';
 
 @Auth()
 @Controller('vehicles')

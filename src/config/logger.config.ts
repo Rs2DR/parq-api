@@ -1,10 +1,11 @@
+import type { ConfigService } from '@nestjs/config';
+
 import {
   LOGGER_LEVELS,
   LOGGER_NAME,
   LOGGER_REDACT_PATHS,
   LOGGER_TIME_FORMAT,
-} from '@infrastructure/logger/logger.constants.js';
-import type { ConfigService } from '@nestjs/config';
+} from '@common/constants/logger.constants.js';
 import type { Params } from 'nestjs-pino';
 
 export function createLoggerConfig(configService: ConfigService): Params {

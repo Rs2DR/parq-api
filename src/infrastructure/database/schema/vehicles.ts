@@ -1,4 +1,5 @@
 import * as p from 'drizzle-orm/pg-core';
+
 import { users } from './users.js';
 
 export const vehicles = p.pgTable('vehicles', {

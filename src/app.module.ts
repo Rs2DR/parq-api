@@ -1,6 +1,13 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+
 import { envSchema } from '@config/env.schema.js';
-import { DatabaseModule } from '@infrastructure/database/database.module.js';
+import { createFirebaseConfig } from '@config/firebase.config.js';
+import { createJwtConfig } from '@config/jwt.config.js';
 import { createLoggerConfig } from '@config/logger.config.js';
+import { createPaymentsConfig } from '@config/payment.config.js';
+import { DatabaseModule } from '@infrastructure/database/database.module.js';
 import { QueueModule } from '@infrastructure/queue/queue.module.js';
 import { AuthModule } from '@modules/auth/auth.module.js';
 import { FirebaseModule } from '@modules/firebase/firebase.module.js';
@@ -10,13 +17,7 @@ import { PaymentsModule } from '@modules/payments/payments.module.js';
 import { UsersModule } from '@modules/users/users.module.js';
 import { VehiclesModule } from '@modules/vehicles/vehicles.module.js';
 import { WebhooksModule } from '@modules/webhooks/webhooks.module.js';
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
 import { LoggerModule } from 'nestjs-pino';
-import { createPaymentsConfig } from '@config/payment.config.js';
-import { createFirebaseConfig } from '@config/firebase.config.js';
-import { createJwtConfig } from '@config/jwt.config.js';
 
 @Module({
   imports: [

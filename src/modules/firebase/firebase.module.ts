@@ -1,18 +1,19 @@
 import { Module, Provider } from '@nestjs/common';
+
 import {
+  type App as FirebaseApp,
   cert,
   getApps,
   initializeApp,
-  type App as FirebaseApp,
 } from 'firebase-admin/app';
 
+import { FIREBASE_CLIENT } from './firebase.constants.js';
 import {
   ConfigurableModuleClass,
   MODULE_OPTIONS_TOKEN,
 } from './firebase.module-definition.js';
 import { FirebaseService } from './firebase.service.js';
 import type { FirebaseModuleOptions } from './interfaces/firebase-module-options.interface.js';
-import { FIREBASE_CLIENT } from './firebase.constants.js';
 
 const firebaseProvider: Provider = {
   provide: FIREBASE_CLIENT,
